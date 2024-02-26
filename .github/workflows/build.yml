@@ -1,0 +1,37 @@
+name: build
+on: push
+
+jobs:
+  register:
+    name: Package, Publish, and Register
+    runs-on: ubuntu-20.04
+    steps:
+      - id: checkout
+        uses: actions/checkout@v4
+
+      - uses: Jimver/cuda-toolkit@v0.2.14
+        id: cuda-toolkit
+        with:
+          cuda: '12.3.2'
+          method: 'network'
+
+      - id: Installed_cuda_version
+        run: |
+          echo "Installed cuda version is: ${{steps.cuda-toolkit.outputs.cuda}}"
+
+      - id: Cuda_install_location
+        run: |
+          echo "Cuda install location: ${{steps.cuda-toolkit.outputs.CUDA_PATH}}"
+
+      - id: nvcc
+        run: |
+          nvcc -V
+
+      - id: docker_build
+        env:
+          USER: kiyoe
+          APP_NAME: runpod-vits
+          VERSION: 1.0.0
+
+        run: |
+          DOCKER_BUILDKIT=1 docker build --progress=plain . -f Dockerfile.runpod -t $USER/$APP_NAME:$VERSION
