@@ -27,7 +27,8 @@ jobs:
         run: |
           nvcc -V
       - id: purge docker
-        run: docker image prune --force
+        run: |
+          docker image prune --force
 
       - id: docker_build
         env:
